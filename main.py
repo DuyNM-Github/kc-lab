@@ -1,23 +1,48 @@
-from fastapi import FastAPI, Request
-from fastapi_keycloak import FastAPIKeycloak
+import re
+from urllib.parse import urlparse
+
+from fastapi import FastAPI, Request, Response
+from keycloak import KeycloakOpenID, KeycloakPostError
+
 
 
 app = FastAPI()
-idp = FastAPIKeycloak(
-    server_url="http://localhost:8080/",
-    client_id="flaskr",
-    client_secret="y5WWBskC8ZTRyE94mhKGW36XcCwf1vUq",
-    admin_client_secret="p2ZVsANbkeWyq74Xq1U6AWHk6DSg37gd",
-    callback_uri="http://localhost:8081/callback",
-    realm="duyrealm"
-)
+# Configure client
+kc_handler = KeycloakOpenID(server_url="http://localhost:8080/",
+                                 client_id="flaskr",
+                                 realm_name="duyrealm",
+                                 client_secret_key='y5WWBskC8ZTRyE94mhKGW36XcCwf1vUq')
+config_well_know = kc_handler.well_known()
 
 
 @app.middleware("http")
 async def authorize(request: Request, call_next):
-    print(request)
+    path = urlparse(str(request.url)).path
+    path_compositions = path.split("/")[1:]
+    print(path_compositions)
+
+    if re.search("^\/auth\/[\w\/]+", path) is None:
+
+        token = request.headers.get('Authorization')[7:]
+        if token is None:
+            return Response(status_code=401)
+        
+        resource = path_compositions[0]
+        scopes = path_compositions[1:] if len(path_compositions) > 1 else None
+        print("/".join(scopes))
+
+        # print(kc_handler.uma_permissions(token))
+        perm = f"/{resource}"
+        if scopes is not None:
+            perm = "#".join((perm, f"/{'/'.join(scopes)}"))
+        print(perm)
+        print(kc_handler.has_uma_access(token, permissions="Empty"))
 
 
-@app.get("/")
+    response = await call_next(request)
+    return response
+
+
+@app.get("/qa/somethingelse/otherthing")
 async def root():
     return {"message": "Hello World"}
