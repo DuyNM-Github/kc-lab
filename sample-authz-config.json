@@ -1,0 +1,139 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "Default Resource",
+      "type": "urn:flaskr:resources:default",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "_id": "9656af71-b2c7-4dc6-8615-bea551a6e58b",
+      "uris": [
+        "/*"
+      ]
+    },
+    {
+      "name": "/auth",
+      "ownerManagedAccess": false,
+      "displayName": "",
+      "attributes": {},
+      "_id": "f4c1686f-9a8e-4887-9693-50dd63f39880",
+      "uris": [],
+      "scopes": [
+        {
+          "name": "/login"
+        }
+      ],
+      "icon_uri": ""
+    },
+    {
+      "name": "/gene",
+      "ownerManagedAccess": false,
+      "displayName": "",
+      "attributes": {},
+      "_id": "5cb8d09d-fcef-47a4-b275-68abe552f042",
+      "uris": [],
+      "scopes": [
+        {
+          "name": "/data"
+        }
+      ],
+      "icon_uri": ""
+    }
+  ],
+  "policies": [
+    {
+      "id": "d78bddc7-1bae-49c6-84b5-8f2a278ace4c",
+      "name": "Default Policy",
+      "description": "A policy that grants access only for users within this realm",
+      "type": "js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+      }
+    },
+    {
+      "id": "5a00ace4-4178-4e14-9927-19a88d1a75ac",
+      "name": "Tester Role",
+      "description": "",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"tester\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "5c2dfd8f-c708-487f-9aed-277270d71e89",
+      "name": "Management Role",
+      "description": "",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"manager\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "335e5733-9cf1-47cf-8137-2382b986c569",
+      "name": "All Role",
+      "description": "",
+      "type": "aggregate",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "applyPolicies": "[\"Tester Role\",\"Management Role\"]"
+      }
+    },
+    {
+      "id": "18490119-87fc-49fb-a80a-cb9bd6b99cc0",
+      "name": "Default Permission",
+      "description": "A permission that applies to the default resource type",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "urn:flaskr:resources:default",
+        "applyPolicies": "[\"Default Policy\"]"
+      }
+    },
+    {
+      "id": "cacc611c-c538-42bc-9fd7-1c39db354f85",
+      "name": "Mangement",
+      "description": "",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"/gene\"]",
+        "applyPolicies": "[\"Management Role\"]"
+      }
+    },
+    {
+      "id": "6ca5a832-a864-4134-8247-86a02e4a7eaf",
+      "name": "OpenPerm",
+      "description": "",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "resources": "[\"/auth\"]",
+        "applyPolicies": "[\"All Role\"]"
+      }
+    }
+  ],
+  "scopes": [
+    {
+      "id": "cfed490c-6400-4af9-a33e-dd4441ff3b87",
+      "name": "/login",
+      "iconUri": ""
+    },
+    {
+      "id": "f4dfbe72-8cb4-469f-82af-730025323d15",
+      "name": "/data",
+      "iconUri": ""
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}
