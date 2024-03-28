@@ -14,5 +14,5 @@ unvicorn main:app --reload
 ```
 
 # Keycloak Configurations
-Realm configuration: kc_samle.json
-Authorization configuration: sample-authz-config.json
+- Realm configuration: kc_samle.json
+- Authorization configuration: sample-authz-config.json
